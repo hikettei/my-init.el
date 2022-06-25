@@ -2,6 +2,8 @@
 (setq inferior-lisp-program "/usr/local/bin/sbcl")
 (add-to-list 'load-path (expand-file-name "~/.emacs.d/slime"))
 (require 'slime)
+(require 'package)
+(require 'use-package)
 
 (slime-setup '(slime-repl slime-fancy slime-banner)) 
 (slime-setup '(slime-fancy slime-indentation))
@@ -213,7 +215,7 @@
 (global-linum-mode t)
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message "")
-
+(mac-auto-ascii-mode 1)
 
 
 (custom-set-variables
