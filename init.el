@@ -232,3 +232,6 @@
  ;; If there is more than one, they won't work right.
  '(doom-modeline-bar ((t (:background "#6272a4"))))
  '(show-paren-match ((nil (:background "#44475a" :foreground "#f1fa8c")))))
+
+;; Heap領域を増やす
+(setq slime-lisp-implementations '(("sbcl" ("sbcl" "--dynamic-space-size" "4096")) ("clisp" ("clisp")) ("ecl" ("ecl")) ("cmucl" ("cmucl"))))
