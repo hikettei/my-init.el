@@ -5,6 +5,9 @@
 (require 'package)
 (require 'use-package)
 
+(require 'elcord)
+(elcord-mode)
+
 (slime-setup '(slime-repl slime-fancy slime-banner)) 
 (slime-setup '(slime-fancy slime-indentation))
 
