@@ -1,15 +1,21 @@
-
-(setq inferior-lisp-program "/usr/local/bin/sbcl")
-(add-to-list 'load-path (expand-file-name "~/.emacs.d/slime"))
-(require 'slime)
+;;(add-to-list 'load-path (expand-file-name "~/.emacs.d/slime"))
+;;(require 'slime)
 (require 'package)
 (require 'use-package)
+
+(use-package slime
+  :if (file-exists-p "~/.roswell/helper.el")
+  :ensure slime-company
+  :init (load "~/.roswell/helper.el")
+  :custom (inferior-lisp-program "ros -Q run")
+  :config (slime-setup '(slime-fancy slime-company)))
 
 (require 'elcord)
 (elcord-mode)
 
 (slime-setup '(slime-repl slime-fancy slime-banner)) 
 (slime-setup '(slime-fancy slime-indentation))
+(slime-setup '(slime-fuzzy))
 
 (when (require 'ivy nil t)
 
@@ -227,7 +233,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(slime-company company nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
+   '(slime-company ac-slime slime-theme slime-repl-ansi-color auto-complete highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -235,6 +241,10 @@
  ;; If there is more than one, they won't work right.
  '(doom-modeline-bar ((t (:background "#6272a4"))))
  '(show-paren-match ((nil (:background "#44475a" :foreground "#f1fa8c")))))
+(put 'upcase-region 'disabled nil)
+(put 'downcase-region 'disabled nil)
 
-;; Heap領域を増やす
-(setq slime-lisp-implementations '(("sbcl" ("sbcl" "--dynamic-space-size" "4096")) ("clisp" ("clisp")) ("ecl" ("ecl")) ("cmucl" ("cmucl"))))
+;;(setq inferior-lisp-program "ros -Q run")
+;;(setq slime-lisp-implementations '(("ros" ("ros" "-Q" "run" "--dynamic-space-size" "4096"))))
+(setf slime-lisp-implementations `((sbcl ("sbcl" "--dynamic-space-size" "4096")) (roswell ("ros" "-Q" "run"))))
+(setf slime-default-lisp 'roswell)
