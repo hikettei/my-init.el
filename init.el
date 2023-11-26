@@ -1,7 +1,18 @@
+;; After installed all dependencies
+;; don't forget doing:
+;; M-x all-the-icons-install-fonts
+
 ;;(add-to-list 'load-path (expand-file-name "~/.emacs.d/slime"))
 ;;(require 'slime)
 (require 'package)
 (require 'use-package)
+
+(setq package-archives
+      '(("gnu" . "http://elpa.gnu.org/packages/")
+        ("melpa" . "http://melpa.org/packages/")
+        ("org" . "http://orgmode.org/elpa/")))
+
+(package-initialize)
 
 (use-package slime
   :if (file-exists-p "~/.roswell/helper.el")
@@ -41,13 +52,6 @@
 
   ;; アクティベート
   (ivy-mode 1))
-
-(setq package-archives
-      '(("gnu" . "http://elpa.gnu.org/packages/")
-        ("melpa" . "http://melpa.org/packages/")
-        ("org" . "http://orgmode.org/elpa/")))
-
-(package-initialize)
 
 (use-package doom-themes
     :custom
@@ -221,11 +225,22 @@
 (tool-bar-mode -1)
 (display-time-mode t)
 (column-number-mode t)
-(global-linum-mode t)
+;;(global-linum-mode t)
+(if (version<= "26.0.50" emacs-version)
+    (progn
+      (global-display-line-numbers-mode)
+      ;;(set-face-attribute 'line-number nil
+      ;;                    :foreground "DarkOliveGreen"
+      ;;                    :background "#131521")
+      ;;(set-face-attribute 'line-number-current-line nil
+      ;;                    :foreground "gold")
+
+      ))
+
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message "")
-(mac-auto-ascii-mode 1)
 
+;;(mac-auto-ascii-mode 1)
 
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
