@@ -1,12 +1,19 @@
-;; After installed all dependencies
-;; don't forget doing:
-;; M-x all-the-icons-install-fonts
+;; This file provides a dev env dedicated to C++/Common Lisp(SLIME), and Python.
 
-;;(add-to-list 'load-path (expand-file-name "~/.emacs.d/slime"))
-;;(require 'slime)
+;; Dependencies:
+;;   After installed all dependencies
+;;   don't forget doing:
+;;   M-x all-the-icons-install-fonts
+;;   M-x package-install ivy
+
+;; (add-to-list 'load-path (expand-file-name "~/.emacs.d/slime"))
+;; (require 'slime)
+
+;; ~~ Packaging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (require 'package)
 (require 'use-package)
 
+;; Preparing MELPA
 (setq package-archives
       '(("gnu" . "http://elpa.gnu.org/packages/")
         ("melpa" . "http://melpa.org/packages/")
@@ -14,27 +21,32 @@
 
 (package-initialize)
 
+;; ~~ Elcord ~~~~~~~~~~~~~~~~~~~~
+(require 'elcord)
+;; Turn off when i'm working
+(elcord-mode)
+
+;; ~~ SLIME Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
 (use-package slime
   :if (file-exists-p "~/.roswell/helper.el")
   :ensure slime-company
   :init (load "~/.roswell/helper.el")
   :custom (inferior-lisp-program "ros -Q run")
-  :config (slime-setup '(slime-fancy slime-company)))
-
-(require 'elcord)
-(elcord-mode)
+  :config (slime-setup '(slime-fancy))) ;;slime-company
 
 (slime-setup '(slime-repl slime-fancy slime-banner)) 
 (slime-setup '(slime-fancy slime-indentation))
 (slime-setup '(slime-fuzzy))
 
+;; ~~ Key Bindings For Ivy ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(require 'ivy)
 (when (require 'ivy nil t)
-
-  ;; M-o を ivy-hydra-read-action に割り当てる．
+  ;; Dispatch M-o as a ivh-hydra-read-action
   (when (require 'ivy-hydra nil t)
     (setq ivy-read-action-function #'ivy-hydra-read-action))
 
-  ;; `ivy-switch-buffer' (C-x b) のリストに recent files と bookmark を含める．
+  ;; `ivy-switch-buffer (C-x b)` includes recent-files and bookmarks.
   (setq ivy-use-virtual-buffers t)
 
   ;; ミニバッファでコマンド発行を認める
@@ -53,6 +65,7 @@
   ;; アクティベート
   (ivy-mode 1))
 
+;; ~~ Themes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (use-package doom-themes
     :custom
     (doom-themes-enable-italic t)
@@ -63,6 +76,8 @@
     (load-theme 'doom-dracula t)
     (doom-themes-neotree-config)
     (doom-themes-org-config))
+
+;; ~~ Fonts ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 (use-package cnfonts
   :ensure t
@@ -82,6 +97,7 @@
   :custom
   (all-the-icons-scale-factor 1.0))
 
+;; ~~ Nyan Mode ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (nyan-mode 1)
 (setq doom-modeline-workspace-name t)
 
@@ -103,8 +119,6 @@
     '(misc-info persp-name debug minor-modes input-method major-mode process vcs checker)))
 
 (setq doom-modeline-buffer-encoding t)
-
-
 	
 (defun ladicle/task-clocked-time ()
         "Return a string with the clocked time and effort, if any"
@@ -165,6 +179,7 @@
 
 (use-package amx)
 
+;; ~~ NeoTree ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 (use-package neotree
     :after
@@ -207,17 +222,18 @@
     (show-paren-when-point-in-periphery t))
 
 
+ ;; ~~ Never Lose My Cursor ~~~~~~~~~~~~~~
  (use-package beacon
     :custom
     (beacon-color "yellow")
     :config
     (beacon-mode 1))
-
-					; control + q
+				
+;; control + q
 (global-set-key "\C-q" 'neotree-toggle)
 
-					; control + q neotree
-; control + m minimap
+					;; control + q neotree
+;; control + m minimap
 
 (cua-mode t) 
 (setq cua-enable-cua-keys nil) 
@@ -226,6 +242,8 @@
 (display-time-mode t)
 (column-number-mode t)
 ;;(global-linum-mode t)
+
+;; ~~ Linum ~~~~~~
 (if (version<= "26.0.50" emacs-version)
     (progn
       (global-display-line-numbers-mode)
@@ -248,18 +266,93 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(slime-company ac-slime slime-theme slime-repl-ansi-color auto-complete highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
+   '(flycheck readline-complete poetry py-import-check py-isort nerd-icons page-break-lines dashboard ivy rust-mode slime-theme slime-repl-ansi-color highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(doom-modeline-bar ((t (:background "#6272a4"))))
+ '(doom-modeline-bar ((t (:background "#6272a4"))) t)
  '(show-paren-match ((nil (:background "#44475a" :foreground "#f1fa8c")))))
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
+;; ~~~~ SLIME SetUp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;;(setq inferior-lisp-program "ros -Q run")
-;;(setq slime-lisp-implementations '(("ros" ("ros" "-Q" "run" "--dynamic-space-size" "4096"))))
-(setf slime-lisp-implementations `((sbcl ("sbcl" "--dynamic-space-size" "4096")) (roswell ("ros" "-Q" "run"))))
+(setf slime-lisp-implementations `((sbcl ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096"))
+				   (roswell ("qlot" "exec" "ros" "-Q" "run" "dynamic-space-size=4096"))
+				   (roswell-no-qlot "ros" "-Q" "run"  "dynamic-space-size=4096")))
 (setf slime-default-lisp 'roswell)
+
+;; ~~ Dash Board ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;; Don't forget to type:
+;;  M-x package-refresh-contents
+;;  M-x package-install dashboard
+;;                      page-break-lines
+;;                      projectile
+;;                      nerd-icons
+(use-package dashboard
+  :ensure t
+  :config
+  (dashboard-setup-startup-hook))
+
+(setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+
+;; Set the title
+(setq dashboard-banner-logo-title "Emacs")
+;; Set the banner
+(setq dashboard-startup-banner 'logo)
+
+;; Content is not centered by default. To center, set
+(setq dashboard-center-content t)
+
+;; To disable shortcut "jump" indicators for each section, set
+(setq dashboard-show-shortcuts nil)
+
+;; Format: "(icon title help action face prefix suffix)"
+(setq dashboard-navigator-buttons
+      `(;; line1
+        ((,(all-the-icons-octicon "mark-github" :height 1.1 :v-adjust 0.0)
+         "Homepage"
+         "Browse homepage"
+         (lambda (&rest _) (browse-url "homepage")))
+        ("★" "Star" "Show stars" (lambda (&rest _) (show-stars)) warning)
+        ("?" "" "?/h" #'show-help nil "<" ">"))
+         ;; line 2
+        ((,(all-the-icons-faicon "linkedin" :height 1.1 :v-adjust 0.0)
+          "Linkedin"
+          ""
+          (lambda (&rest _) (browse-url "homepage")))
+         ("⚑" nil "Show flags" (lambda (&rest _) (message "flag")) error))))
+
+(setq dashboard-footer-icon (all-the-icons-octicon "dashboard"
+                                                   :height 1.1
+                                                   :v-adjust -0.05
+                                                   :face 'font-lock-keyword-face))
+
+;; ~~ Python Dev ~~~~~~~~~~~~~~~
+;; - REPL-Driven Style
+;; - C-c and tests the whole file
+(require 'leaf)
+
+;;(leaf poetry
+;;  :ensure t
+;;  :hook ((elpy-mode-hook . poetry-tracking-mode)))
+;; M-x package install flycheck
+
+(leaf elpy
+  :ensure t
+  :init
+  (elpy-enable)
+;;  :config
+;;  (remove-hook 'elpy-modules 'elpy-module-highlight-indentation) ;; インデントハイライトの無効化
+;;  (remove-hook 'elpy-modules 'elpy-module-flymake) ;; flymakeの無効化
+  :custom
+  (elpy-rpc-python-command . "python3") ;; https://mako-note.com/ja/elpy-rpc-python-version/の問題を回避するための設定
+  (flycheck-python-flake8-executable . "flake8")
+  :bind (elpy-mode-map
+         ("C-c C-r f" . elpy-format-code))
+  :hook ((elpy-mode-hook . flycheck-mode))
+
+)
+
