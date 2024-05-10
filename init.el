@@ -35,7 +35,7 @@
   :custom (inferior-lisp-program "ros -Q run")
   :config (slime-setup '(slime-fancy))) ;;slime-company
 
-(slime-setup '(slime-repl slime-fancy slime-banner)) 
+(slime-setup '(slime-repl slime-fancy slime-banner))
 (slime-setup '(slime-fancy slime-indentation))
 (slime-setup '(slime-fuzzy))
 
@@ -119,7 +119,7 @@
     '(misc-info persp-name debug minor-modes input-method major-mode process vcs checker)))
 
 (setq doom-modeline-buffer-encoding t)
-	
+
 (defun ladicle/task-clocked-time ()
         "Return a string with the clocked time and effort, if any"
         (interactive)
@@ -228,15 +228,33 @@
     (beacon-color "yellow")
     :config
     (beacon-mode 1))
-				
+
+(eval-after-load "neotree"
+  '(progn
+     (setq neo-hidden-regexp-list '("^\\." "\\.pyc$" "\\.fasl$" "~$" "^#.*#$" "\\.elc$"))
+     (setq neo-show-hidden-files nil)))
+
+;; Set the neo-window-width to the current width of the
+;; neotree window, to trick neotree into resetting the
+;; width back to the actual window width.
+;; Fixes: https://github.com/jaypei/emacs-neotree/issues/262
+(eval-after-load "neotree"
+  '(add-to-list 'window-size-change-functions
+                (lambda (frame)
+                  (let ((neo-window (neo-global--get-window)))
+                    (unless (null neo-window)
+                      (setq neo-window-width (window-width neo-window)))))))
+
+(setq scroll-bar-mode nil)
+
 ;; control + q
 (global-set-key "\C-q" 'neotree-toggle)
 
 					;; control + q neotree
 ;; control + m minimap
 
-(cua-mode t) 
-(setq cua-enable-cua-keys nil) 
+(cua-mode t)
+(setq cua-enable-cua-keys nil)
 
 (tool-bar-mode -1)
 (display-time-mode t)
@@ -255,7 +273,7 @@
 
       ))
 
-(setq inhibit-startup-message t) 
+(setq inhibit-startup-message t)
 (setq initial-scratch-message "")
 
 ;;(mac-auto-ascii-mode 1)
@@ -266,7 +284,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(flycheck readline-complete poetry py-import-check py-isort nerd-icons page-break-lines dashboard ivy rust-mode slime-theme slime-repl-ansi-color highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
+   '(haskell-mode flycheck readline-complete poetry py-import-check py-isort nerd-icons page-break-lines dashboard ivy rust-mode slime-theme slime-repl-ansi-color highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -355,4 +373,3 @@
   :hook ((elpy-mode-hook . flycheck-mode))
 
 )
-
