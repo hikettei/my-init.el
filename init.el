@@ -1,5 +1,5 @@
 ;; This file provides a dev env dedicated to C++/Common Lisp(SLIME), and Python.
-
+;; TODO: Use leaf
 ;; Dependencies:
 ;;   After installed all dependencies
 ;;   don't forget doing:
@@ -16,8 +16,9 @@
 ;; Preparing MELPA
 (setq package-archives
       '(("gnu" . "http://elpa.gnu.org/packages/")
-        ("melpa" . "http://melpa.org/packages/")
-        ("org" . "http://orgmode.org/elpa/")))
+        ;;("melpa" . "http://melpa.org/packages/")
+        ("org" . "http://orgmode.org/elpa/")
+	("melpa-stable" . "https://stable.melpa.org/packages/")))
 
 (package-initialize)
 
@@ -35,7 +36,7 @@
   :custom (inferior-lisp-program "ros -Q run")
   :config (slime-setup '(slime-fancy))) ;;slime-company
 
-(slime-setup '(slime-repl slime-fancy slime-banner))
+(slime-setup '(slime-repl slime-fancy slime-banner)) 
 (slime-setup '(slime-fancy slime-indentation))
 (slime-setup '(slime-fuzzy))
 
@@ -119,7 +120,7 @@
     '(misc-info persp-name debug minor-modes input-method major-mode process vcs checker)))
 
 (setq doom-modeline-buffer-encoding t)
-
+	
 (defun ladicle/task-clocked-time ()
         "Return a string with the clocked time and effort, if any"
         (interactive)
@@ -253,8 +254,8 @@
 					;; control + q neotree
 ;; control + m minimap
 
-(cua-mode t)
-(setq cua-enable-cua-keys nil)
+(cua-mode t) 
+(setq cua-enable-cua-keys nil) 
 
 (tool-bar-mode -1)
 (display-time-mode t)
@@ -273,7 +274,7 @@
 
       ))
 
-(setq inhibit-startup-message t)
+(setq inhibit-startup-message t) 
 (setq initial-scratch-message "")
 
 ;;(mac-auto-ascii-mode 1)
@@ -284,7 +285,7 @@
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(package-selected-packages
-   '(haskell-mode flycheck readline-complete poetry py-import-check py-isort nerd-icons page-break-lines dashboard ivy rust-mode slime-theme slime-repl-ansi-color highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
+   '(markdown-mode markdown-preview-mode jedi haskell-mode readline-complete py-isort nerd-icons page-break-lines dashboard ivy rust-mode slime-theme slime-repl-ansi-color highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -297,11 +298,11 @@
 
 ;; ~~~~ SLIME SetUp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;;(setq inferior-lisp-program "ros -Q run")
-(setf slime-lisp-implementations `((sbcl ("qlot" "exec" "sbcl" "--dynamic-space-size" "4096"))
-				   (roswell ("qlot" "exec" "ros" "-Q" "run" "dynamic-space-size=4096"))
-				   (roswell-no-qlot "ros" "-Q" "run"  "dynamic-space-size=4096")))
+(setf slime-lisp-implementations `((sbcl ("qlot" "exec" "sbcl" "--dynamic-space-size" "16384"))
+				   (roswell ("qlot" "exec" "ros" "-Q" "run" "dynamic-space-size=16384"))
+				   (roswell-no-qlot ("ros" "-Q" "run"  "dynamic-space-size=16384"))))
 (setf slime-default-lisp 'roswell)
-
+;;(setf slime-default-lisp 'roswell-no-qlot)
 ;; ~~ Dash Board ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;; Don't forget to type:
 ;;  M-x package-refresh-contents
@@ -361,15 +362,31 @@
 (leaf elpy
   :ensure t
   :init
-  (elpy-enable)
-;;  :config
-;;  (remove-hook 'elpy-modules 'elpy-module-highlight-indentation) ;; インデントハイライトの無効化
-;;  (remove-hook 'elpy-modules 'elpy-module-flymake) ;; flymakeの無効化
+  (advice-add 'python-mode :before 'elpy-enable)
+  :config
+  (setq elpy-rpc-python-command "python")
+  (setq python-shell-interpreter "python")
+  (remove-hook 'elpy-modules 'elpy-module-highlight-indentation) ;; インデントハイライトの無効化
+  (remove-hook 'elpy-modules 'elpy-module-flymake) ;; flymakeの無効化
   :custom
   (elpy-rpc-python-command . "python3") ;; https://mako-note.com/ja/elpy-rpc-python-version/の問題を回避するための設定
-  (flycheck-python-flake8-executable . "flake8")
-  :bind (elpy-mode-map
-         ("C-c C-r f" . elpy-format-code))
-  :hook ((elpy-mode-hook . flycheck-mode))
+  ;;(flycheck-python-flake8-executable . "flake8");
+;  :bind (elpy-mode-map
+;         ("C-c C-r f" . elpy-format-code))
+;;  :hook ((elpy-mode-hook . flycheck-mode))
+  )
 
-)
+(add-hook 'python-mode-hook 'jedi:setup)
+(setq jedi:setup-keys t)
+(setq jedi:complete-on-dot t)
+
+;;;)
+
+(add-to-list 'auto-mode-alist '("\\.md\\'" . gfm-mode))
+(with-eval-after-load 'markdown-mode
+  (custom-set-variables
+   '(markdown-command '("pandoc" "--from=markdown" "--to=html5"))
+   '(markdown-fontify-code-blocks-natively t)
+   '(markdown-header-scaling t)
+   '(markdown-indent-on-enter 'indent-and-new-item))
+  (define-key markdown-mode-map (kbd "<S-tab>") #'markdown-shifttab))
