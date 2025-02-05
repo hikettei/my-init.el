@@ -1,5 +1,5 @@
 ;; This file provides a dev env dedicated to C++/Common Lisp(SLIME), and Python.
-;; TODO: Use leaf
+
 ;; Dependencies:
 ;;   After installed all dependencies
 ;;   don't forget doing:
@@ -284,14 +284,23 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(markdown-command '("pandoc" "--from=markdown" "--to=html5"))
+ '(markdown-fontify-code-blocks-natively t)
+ '(markdown-header-scaling nil)
+ '(markdown-indent-on-enter 'indent-and-new-item)
  '(package-selected-packages
-   '(markdown-mode markdown-preview-mode jedi haskell-mode readline-complete py-isort nerd-icons page-break-lines dashboard ivy rust-mode slime-theme slime-repl-ansi-color highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
+   '(use-package-hydra blackout hydra leaf-keywords el-get pandoc-mode pandoc markdown-mode markdown-preview-mode jedi haskell-mode readline-complete py-isort nerd-icons page-break-lines dashboard ivy rust-mode slime-theme slime-repl-ansi-color highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+ '(default ((t (:inherit nil :extend nil :stipple nil :background "#282a36" :foreground "#dcdcdc" :inverse-video nil :box nil :strike-through nil :overline nil :underline nil :slant normal :weight regular :height 120 :width normal :foundry "nil" :family "Monaco"))))
  '(doom-modeline-bar ((t (:background "#6272a4"))) t)
+ '(markdown-bold-face ((t (:foreground "#f0f8ff" :inherit bold))))
+ '(markdown-header-face ((t (:foreground "#87cefa" :inherit bold))))
+ '(markdown-link-face ((t (:foreground "#c0c0c0"))))
+ '(markdown-list-face ((t (:foreground "#ff7f50"))))
  '(show-paren-match ((nil (:background "#44475a" :foreground "#f1fa8c")))))
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
@@ -299,7 +308,7 @@
 ;; ~~~~ SLIME SetUp ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;;(setq inferior-lisp-program "ros -Q run")
 (setf slime-lisp-implementations `((sbcl ("qlot" "exec" "sbcl" "--dynamic-space-size" "16384"))
-				   (roswell ("qlot" "exec" "ros" "-Q" "run" "dynamic-space-size=16384"))
+				   (roswell ("qlot" "exec" "ros" "-Q" "run" "dynamic-space-size=64384"))
 				   (roswell-no-qlot ("ros" "-Q" "run"  "dynamic-space-size=16384"))))
 (setf slime-default-lisp 'roswell)
 ;;(setf slime-default-lisp 'roswell-no-qlot)
@@ -353,12 +362,10 @@
 ;; - REPL-Driven Style
 ;; - C-c and tests the whole file
 (require 'leaf)
-
 ;;(leaf poetry
 ;;  :ensure t
 ;;  :hook ((elpy-mode-hook . poetry-tracking-mode)))
 ;; M-x package install flycheck
-
 (leaf elpy
   :ensure t
   :init
@@ -387,6 +394,55 @@
   (custom-set-variables
    '(markdown-command '("pandoc" "--from=markdown" "--to=html5"))
    '(markdown-fontify-code-blocks-natively t)
-   '(markdown-header-scaling t)
+   '(markdown-header-scaling nil)
    '(markdown-indent-on-enter 'indent-and-new-item))
   (define-key markdown-mode-map (kbd "<S-tab>") #'markdown-shifttab))
+
+(defvar bootstrap-version)
+(let ((bootstrap-file
+       (expand-file-name "straight/repos/straight.el/bootstrap.el" user-emacs-directory))
+      (bootstrap-version 5))
+  (unless (file-exists-p bootstrap-file)
+    (with-current-buffer
+        (url-retrieve-synchronously
+         "https://raw.githubusercontent.com/raxod502/straight.el/develop/install.el"
+         'silent 'inhibit-cookies)
+      (goto-char (point-max))
+      (eval-print-last-sexp)))
+  (load bootstrap-file nil 'nomessage))
+
+
+(straight-use-package
+ '(copilot :type git :host github :repo "zerolfx/copilot.el" :files ("dist" "*.el")))
+
+(setq copilot-node-executable "node")
+;; プログラムモードの場合、copilot-modeを実行
+(add-hook 'prog-mode-hook 'copilot-mode)
+;; copilot用にキーバインドを設定
+(defun my-tab ()
+  (interactive)
+  (or (copilot-accept-completion)
+      (company-indent-or-complete-common nil)))
+(global-set-key (kbd "C-TAB") #'my-tab)
+(global-set-key (kbd "C-<tab>") #'my-tab)
+
+(require 'copilot)
+(define-key copilot-completion-map (kbd "<tab>") 'my-tab)
+(define-key copilot-completion-map (kbd "TAB") 'my-tab)
+
+(with-eval-after-load 'company
+  (define-key company-active-map (kbd "C-TAB") #'my-tab)
+  (define-key company-active-map (kbd "C-<tab>") #'my-tab)
+  (define-key company-mode-map (kbd "C-TAB") #'my-tab)
+  (define-key company-mode-map (kbd "C-<tab>") #'my-tab))
+
+(add-to-list
+ 'copilot-indentation-alist
+ '(lisp-mode 4))
+
+(setq-default indent-tabs-mode nil)
+
+(global-set-key (kbd "C-c <left>")  'windmove-left)
+(global-set-key (kbd "C-c <down>")  'windmove-down)
+(global-set-key (kbd "C-c <up>")    'windmove-up)
+(global-set-key (kbd "C-c <right>") 'windmove-right)
