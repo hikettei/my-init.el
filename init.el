@@ -426,10 +426,10 @@
 
 (setq-default indent-tabs-mode nil)
 
-(global-set-key (kbd "C-c <left>")  'windmove-left)
+;;(global-set-key (kbd "C-c <left>")  'windmove-left)
 (global-set-key (kbd "C-c <down>")  'windmove-down)
 (global-set-key (kbd "C-c <up>")    'windmove-up)
-(global-set-key (kbd "C-c <right>") 'windmove-right)
+;;(global-set-key (kbd "C-c <right>") 'windmove-right)
 
 (use-package centaur-tabs
   :ensure t
@@ -437,8 +437,10 @@
   :config
   (centaur-tabs-mode t)
   :bind
-  ("C-<prior>" . centaur-tabs-backward)
-  ("C-<next>"  . centaur-tabs-forward))
+  ("C-c <prior>" . centaur-tabs-backward)
+  ("C-c <next>"  . centaur-tabs-forward)
+  ("C-c <left>" . centaur-tabs-move-current-tab-to-left)
+  ("C-c <right>" . centaur-tabs-move-current-tab-to-right))
 (centaur-tabs-headline-match)
 (setq centaur-tabs-set-icons t)
 (setq centaur-tabs-icon-type 'all-the-icons)
@@ -452,7 +454,6 @@
 ;; ~~~~~~ 起動時点での画面 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;; 1. Neotreeをデフォルトで表示
 ;; 2. multi-termを右下に表示したい
-
 (setq neo-window-width 40)
 (add-hook 'emacs-startup-hook #'neotree-show)
 
@@ -460,8 +461,16 @@
 
 (add-hook 'emacs-startup-hook
           (lambda ()
-            (let ((height (/ (window-body-height) 4)))
-              (split-window-vertically (* 3 height)))
+            (let ((height (/ (window-body-height) 5)))
+              (split-window-vertically (* 4 height)))
             (other-window 1)
             (multi-term)
             (other-window -1)))
+;; vundo
+(use-package vundo
+  :ensure t
+  :bind
+  ("C-x u" . vundo))
+(setq vundo-window-max-height 10)
+(setq vundo-glyph-alist vundo-unicode-symbols)
+(set-face-attribute 'vundo-default nil :family "Symbola")
