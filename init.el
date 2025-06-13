@@ -1,34 +1,20 @@
 ;; This file provides a dev env dedicated to C++/Common Lisp(SLIME), and Python.
-
-;; Dependencies:
-;;   After installed all dependencies
-;;   don't forget doing:
-;;   M-x all-the-icons-install-fonts
-;;   M-x package-install ivy
-
-;; (add-to-list 'load-path (expand-file-name "~/.emacs.d/slime"))
-;; (require 'slime)
-
 ;; ~~ Packaging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (require 'package)
+;; TODO: use-package使ってるけど，elpaca+setupに書き換えたい
 (require 'use-package)
-
 ;; Preparing MELPA
 (setq package-archives
       '(("gnu" . "http://elpa.gnu.org/packages/")
         ;;("melpa" . "http://melpa.org/packages/")
         ("org" . "http://orgmode.org/elpa/")
 	("melpa-stable" . "https://stable.melpa.org/packages/")))
-
 (package-initialize)
-
-;; ~~ Elcord ~~~~~~~~~~~~~~~~~~~~
-(require 'elcord)
-;; Turn off when i'm working
+;; ~~ Elcord ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+(use-package elcord
+  :ensure t)
 (elcord-mode)
-
 ;; ~~ SLIME Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 (use-package slime
   :if (file-exists-p "~/.roswell/helper.el")
   :ensure slime-company
@@ -39,33 +25,31 @@
 (slime-setup '(slime-repl slime-fancy slime-banner)) 
 (slime-setup '(slime-fancy slime-indentation))
 (slime-setup '(slime-fuzzy))
-
 ;; ~~ Key Bindings For Ivy ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(require 'ivy)
-(when (require 'ivy nil t)
-  ;; Dispatch M-o as a ivh-hydra-read-action
-  (when (require 'ivy-hydra nil t)
-    (setq ivy-read-action-function #'ivy-hydra-read-action))
+(use-package ivy
+  :ensure t)
+;; Dispatch M-o as a ivh-hydra-read-action
+(when (require 'ivy-hydra nil t)
+  (setq ivy-read-action-function #'ivy-hydra-read-action))
 
-  ;; `ivy-switch-buffer (C-x b)` includes recent-files and bookmarks.
-  (setq ivy-use-virtual-buffers t)
+;; `ivy-switch-buffer (C-x b)` includes recent-files and bookmarks.
+(setq ivy-use-virtual-buffers t)
 
-  ;; ミニバッファでコマンド発行を認める
-  (when (setq enable-recursive-minibuffers t)
-    (minibuffer-depth-indicate-mode 1)) ;; 何回層入ったかプロンプトに表示．
+;; ミニバッファでコマンド発行を認める
+(when (setq enable-recursive-minibuffers t)
+  (minibuffer-depth-indicate-mode 1)) ;; 何回層入ったかプロンプトに表示．
 
-  ;; ESC連打でミニバッファを閉じる
-  (define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
+;; ESC連打でミニバッファを閉じる
+(define-key ivy-minibuffer-map (kbd "<escape>") 'minibuffer-keyboard-quit)
 
-  ;; プロンプトの表示が長い時に折り返す（選択候補も折り返される）
-  (setq ivy-truncate-lines nil)
+;; プロンプトの表示が長い時に折り返す（選択候補も折り返される）
+(setq ivy-truncate-lines nil)
 
-  ;; リスト先頭で `C-p' するとき，リストの最後に移動する
-  (setq ivy-wrap t)
+;; リスト先頭で `C-p' するとき，リストの最後に移動する
+(setq ivy-wrap t)
 
-  ;; アクティベート
-  (ivy-mode 1))
-
+;; アクティベート
+(ivy-mode 1)
 ;; ~~ Themes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (use-package doom-themes
     :custom
@@ -77,9 +61,7 @@
     (load-theme 'doom-dracula t)
     (doom-themes-neotree-config)
     (doom-themes-org-config))
-
 ;; ~~ Fonts ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 (use-package cnfonts
   :ensure t
   :after all-the-icons
@@ -95,6 +77,7 @@
   (cnfonts-enable))
 
 (use-package all-the-icons
+  :ensure t
   :custom
   (all-the-icons-scale-factor 1.0))
 
@@ -246,6 +229,7 @@
                     (unless (null neo-window)
                       (setq neo-window-width (window-width neo-window)))))))
 
+(customize-set-variable 'scroll-bar-mode nil)
 (setq scroll-bar-mode nil)
 
 ;; control + q
@@ -446,3 +430,38 @@
 (global-set-key (kbd "C-c <down>")  'windmove-down)
 (global-set-key (kbd "C-c <up>")    'windmove-up)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
+
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  :bind
+  ("C-<prior>" . centaur-tabs-backward)
+  ("C-<next>"  . centaur-tabs-forward))
+(centaur-tabs-headline-match)
+(setq centaur-tabs-set-icons t)
+(setq centaur-tabs-icon-type 'all-the-icons)
+(setq centaur-tabs-set-bar 'under)
+;; Note: If you're not using Spacmeacs, in order for the underline to display
+;; correctly you must add the following line:
+(setq x-underline-at-descent-line t)
+(setq centaur-tabs-close-button "X")
+(setq centaur-tabs-set-modified-marker t)
+(setq centaur-tabs-modified-marker "*")
+;; ~~~~~~ 起動時点での画面 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+;; 1. Neotreeをデフォルトで表示
+;; 2. multi-termを右下に表示したい
+
+(setq neo-window-width 40)
+(add-hook 'emacs-startup-hook #'neotree-show)
+
+(load-file "~/.emacs.d/multi-term.el")
+
+(add-hook 'emacs-startup-hook
+          (lambda ()
+            (let ((height (/ (window-body-height) 4)))
+              (split-window-vertically (* 3 height)))
+            (other-window 1)
+            (multi-term)
+            (other-window -1)))
