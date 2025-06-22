@@ -1,5 +1,5 @@
 (defun include (name)
-  (let ((pathname (concat (file-name-as-directory "./hikettei/") name)))
+  (let ((pathname (concat (file-name-as-directory "~/.emacs.d/hikettei/") name)))
     (format "Loading %s...\n" pathname)
     (if (file-exists-p pathname)
         (load-file pathname)
@@ -12,8 +12,8 @@
 (include "4common-lisp.el")     ;; Emacs as a Common Lisp IDE
 (include "5python.el")          ;; Python Development Environment
 (include "6markdown.el")        ;; Markdown Editing Environment
-(include "7eaf.el")             ;; Emacs Application Framework Setup
-(include "8claude-code.el")     ;; Claude Code Configurations
+;(include "7eaf.el")             ;; Emacs Application Framework Setup
+;(include "8claude-code.el")     ;; Claude Code Configurations
 (include "style.el")            ;; Style Configuration
 (include "keybindings.el")      ;; Keybindings for Emacs
 (include "dashboard.el")        ;; Dashboard setup
