@@ -1,17 +1,14 @@
 ;; This file provides a dev env dedicated to C++/Common Lisp(SLIME), and Python.
 
 (defun include (name) (load-file name))
-(include "0package-manager.el")
-(include "1setup.el")
-(include "2multi-term.el")
-(include "3theme.el")
+(include "0package-manager.el") ;; Setup Elpaca and use-package
+(include "1multi-term.el")      ;; Multi-term setup
+(include "2theme.el")           ;; Doom-Theme, Fonts, Configuration
 
 ;; ~~ Packaging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ;; ~~ Elcord ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(use-package elcord
-  :ensure t)
-(elcord-mode)
+
 ;; ~~ SLIME Setup ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (use-package slime
   :if (file-exists-p "~/.roswell/helper.el")
@@ -49,59 +46,13 @@
 ;; アクティベート
 (ivy-mode 1)
 ;; ~~ Themes ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(use-package doom-themes
-    :custom
-    (doom-themes-enable-italic t)
-    (doom-themes-enable-bold t)
-    :custom-face
-    (doom-modeline-bar ((t (:background "#6272a4"))))
-    :config
-    (load-theme 'doom-dracula t)
-    (doom-themes-neotree-config)
-    (doom-themes-org-config))
-;; ~~ Fonts ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(use-package cnfonts
-  :ensure t
-  :after all-the-icons
-  :hook (cnfonts-set-font-finish
-         . (lambda (fontsizes-list)
-             (set-fontset-font t 'unicode (font-spec :family "all-the-icons") nil 'append)
-             (set-fontset-font t 'unicode (font-spec :family "file-icons") nil 'append)
-             (set-fontset-font t 'unicode (font-spec :family "Material Icons") nil 'append)
-             (set-fontset-font t 'unicode (font-spec :family "github-octicons") nil 'append)
-             (set-fontset-font t 'unicode (font-spec :family "FontAwesome") nil 'append)
-             (set-fontset-font t 'unicode (font-spec :family "Weather Icons") nil 'append)))
-  :config
-  (cnfonts-enable))
 
-(use-package all-the-icons
-  :ensure t
-  :custom
-  (all-the-icons-scale-factor 1.0))
+;; ~~ Fonts ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ;; ~~ Nyan Mode ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(nyan-mode 1)
-(setq doom-modeline-workspace-name t)
 
-(use-package doom-modeline
-  :commands (doom-modeline-def-modeline)
-  :custom
-  (doom-modeline-buffer-file-name-style 'truncate-with-project)
-  (doom-modeline-icon t)
-  (doom-modeline-major-mode-icon nil)
-  (doom-modeline-minor-modes nil)
-  :hook
-  (after-init . doom-modeline-mode)
-  :config
-  (line-number-mode 0)
-  (column-number-mode 0)
-  (doom-modeline-def-modeline
-    'main
-    '(bar window-number matches buffer-info remote-host buffer-position parrot selection-info)
-    '(misc-info persp-name debug minor-modes input-method major-mode process vcs checker)))
 
-(setq doom-modeline-buffer-encoding t)
-	
+ ;; who need this?
 (defun ladicle/task-clocked-time ()
         "Return a string with the clocked time and effort, if any"
         (interactive)
@@ -117,7 +68,7 @@
                  (effort-str (format "%d:%02d" effort-h effort-m)))
             (format "%s/%s" work-done-str effort-str))
             (format "%s" work-done-str))))
-
+;; kesu?
 (use-package org-pomodoro
     :after org-agenda
     :custom
@@ -150,117 +101,8 @@
     :bind (:map org-agenda-mode-map
                 ("p" . org-pomodoro)))
 
-(use-package org-bullets
-      :custom (org-bullets-bullet-list '("" "" "" "" "" "" "" "" "" ""))
-      :hook (org-mode . org-bullets-mode))
 
-
-(use-package which-key
-    :diminish which-key-mode
-    :hook (after-init . which-key-mode))
-
-(use-package amx)
-
-;; ~~ NeoTree ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-(use-package neotree
-    :after
-    projectile
-    :commands
-    (neotree-show neotree-hide neotree-dir neotree-find)
-    :custom
-    (neo-theme 'nerd2)
-    :bind
-    ("<f9>" . neotree-projectile-toggle)
-    :preface
-    (defun neotree-projectile-toggle ()
-      (interactive)
-      (let ((project-dir
-         (ignore-errors
-         ;;; Pick one: projectile or find-file-in-project
-           (projectile-project-root)
-           ))
-        (file-name (buffer-file-name))
-        (neo-smart-open t))
-    (if (and (fboundp 'neo-global--window-exists-p)
-         (neo-global--window-exists-p))
-        (neotree-hide)
-      (progn
-        (neotree-show)
-        (if project-dir
-        (neotree-dir project-dir))
-        (if file-name
-	    (neotree-find file-name)))))))
-
-  (use-package paren
-    :ensure nil
-    :hook
-    (after-init . show-paren-mode)
-    :custom-face
-    (show-paren-match ((nil (:background "#44475a" :foreground "#f1fa8c"))))
-    :custom
-    (show-paren-style 'mixed)
-    (show-paren-when-point-inside-paren t)
-    (show-paren-when-point-in-periphery t))
-
-
- ;; ~~ Never Lose My Cursor ~~~~~~~~~~~~~~
- (use-package beacon
-    :custom
-    (beacon-color "yellow")
-    :config
-    (beacon-mode 1))
-
-(eval-after-load "neotree"
-  '(progn
-     (setq neo-hidden-regexp-list '("^\\." "\\.pyc$" "\\.fasl$" "~$" "^#.*#$" "\\.elc$"))
-     (setq neo-show-hidden-files nil)))
-
-;; Set the neo-window-width to the current width of the
-;; neotree window, to trick neotree into resetting the
-;; width back to the actual window width.
-;; Fixes: https://github.com/jaypei/emacs-neotree/issues/262
-(eval-after-load "neotree"
-  '(add-to-list 'window-size-change-functions
-                (lambda (frame)
-                  (let ((neo-window (neo-global--get-window)))
-                    (unless (null neo-window)
-                      (setq neo-window-width (window-width neo-window)))))))
-
-(customize-set-variable 'scroll-bar-mode nil)
-(setq scroll-bar-mode nil)
-
-;; control + q
-(global-set-key "\C-q" 'neotree-toggle)
-
-					;; control + q neotree
-;; control + m minimap
-
-(cua-mode t) 
-(setq cua-enable-cua-keys nil) 
-
-(tool-bar-mode -1)
-(display-time-mode t)
-(column-number-mode t)
-;;(global-linum-mode t)
-
-;; ~~ Linum ~~~~~~
-(if (version<= "26.0.50" emacs-version)
-    (progn
-      (global-display-line-numbers-mode)
-      ;;(set-face-attribute 'line-number nil
-      ;;                    :foreground "DarkOliveGreen"
-      ;;                    :background "#131521")
-      ;;(set-face-attribute 'line-number-current-line nil
-      ;;                    :foreground "gold")
-
-      ))
-
-(setq inhibit-startup-message t) 
-(setq initial-scratch-message "")
-
-;;(mac-auto-ascii-mode 1)
-
+;; sita ha kesite ok?
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -272,6 +114,7 @@
  '(markdown-indent-on-enter 'indent-and-new-item)
  '(package-selected-packages
    '(use-package-hydra blackout hydra leaf-keywords el-get pandoc-mode pandoc markdown-mode markdown-preview-mode jedi haskell-mode readline-complete py-isort nerd-icons page-break-lines dashboard ivy rust-mode slime-theme slime-repl-ansi-color highlight color-identifiers-mode clang-format+ swift3-mode swift-mode elpy better-defaults elcord all-the-icons-gnus nyan-mode cnfonts minimap beacon lsp-mode ccls ivy-rich counsel amx which-key hide-mode-line doom-modeline doom-themes ztree use-package neotree all-the-icons-ivy all-the-icons-dired)))
+;; sita ha nani?
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -284,6 +127,7 @@
  '(markdown-link-face ((t (:foreground "#c0c0c0"))))
  '(markdown-list-face ((t (:foreground "#ff7f50"))))
  '(show-paren-match ((nil (:background "#44475a" :foreground "#f1fa8c")))))
+
 (put 'upcase-region 'disabled nil)
 (put 'downcase-region 'disabled nil)
 
