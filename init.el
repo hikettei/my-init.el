@@ -1,4 +1,10 @@
-(defun include (name) (load-file name))
+(defun include (name)
+  (let ((pathname (concat (file-name-as-directory "./hikettei/") name)))
+    (format "Loading %s...\n" pathname)
+    (if (file-exists-p pathname)
+        (load-file pathname)
+        (message "File %s does not exist." pathname))))
+
 (include "0package-manager.el") ;; Setup Elpaca and use-package
 (include "1multi-term.el")      ;; Multi-term setup
 (include "2theme.el")           ;; Doom-Theme, Fonts, Configuration
