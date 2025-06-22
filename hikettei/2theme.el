@@ -1,17 +1,12 @@
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;;  Theme Configuration
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(use-package doom-themes
+;; Extra icons provided by all-the-icons package, neotree may need them.
+(use-package all-the-icons
   :ensure t
+  :pin melpa
   :custom
-  (doom-themes-enable-italic t)
-  (doom-themes-enable-bold t)
-  :custom-face
-  (doom-modeline-bar ((t (:background "#6272a4"))))
-  :config
-  (load-theme 'doom-dracula t)
-  (doom-themes-neotree-config)
-  (doom-themes-org-config))
+  (all-the-icons-scale-factor 1.0))
 
 (use-package cnfonts
   :ensure t
@@ -27,11 +22,25 @@
   :config
   (cnfonts-enable))
 
-;; Extra icons provided by all-the-icons package, neotree may need them.
-(use-package all-the-icons
+(use-package doom-themes
+  :pin melpa
   :ensure t
+  :after neotree
   :custom
-  (all-the-icons-scale-factor 1.0))
+  (doom-themes-enable-italic t)
+  (doom-themes-enable-bold t)
+  :custom-face
+  (doom-modeline-bar ((t (:background "#6272a4"))))
+  :config
+  (load-theme 'doom-dracula t)
+  ;; Enable flashing mode-line on errors
+  (doom-themes-visual-bell-config)
+  ;; Enable custom neotree theme (nerd-icons must be installed!)
+  (doom-themes-neotree-config)
+  ;; or for treemacs users
+  (doom-themes-treemacs-config)
+  ;; Corrects (and improves) org-mode's native fontification.
+  (doom-themes-org-config))
 
 ;; Using Rich Preference for Discord
 (use-package elcord
@@ -61,7 +70,9 @@
   (doom-modeline-def-modeline
     'main
     '(bar window-number matches buffer-info remote-host buffer-position parrot selection-info)
-    '(misc-info persp-name debug minor-modes input-method major-mode process vcs checker))
+    '(misc-info persp-name debug minor-modes input-method major-mode process vcs
+                ;; checker
+                ))
   (setq doom-modeline-workspace-name t)
   (setq doom-modeline-buffer-encoding t))
 
@@ -93,6 +104,7 @@
 (use-package projectile :ensure t)
 
 (use-package neotree
+  :pin melpa
   :ensure t
   :after
   projectile
@@ -124,16 +136,7 @@
 	      (neotree-find file-name))))))
   :config
   (setq neo-hidden-regexp-list '("^\\." "\\.pyc$" "\\.fasl$" "~$" "^#.*#$" "\\.elc$"))
-  (setq neo-show-hidden-files nil)
-  ;; Set the neo-window-width to the current width of the
-  ;; neotree window, to trick neotree into resetting the
-  ;; width back to the actual window width.
-  ;; Fixes: https://github.com/jaypei/emacs-neotree/issues/262
-  (add-to-list 'window-size-change-functions
-               (lambda (frame)
-                 (let ((neo-window (neo-global--get-window)))
-                   (unless (null neo-window)
-                     (setq neo-window-width (window-width neo-window)))))))
+  (setq neo-show-hidden-files nil))
 ;; Rich M-x
 (use-package amx
   :ensure t
@@ -171,10 +174,19 @@
   (setq vundo-glyph-alist vundo-unicode-symbols)
   ;; (set-face-attribute 'vundo-default nil :family "Symbola")
   )
+
+(use-package ultra-scroll
+  ;:load-path "~/code/emacs/ultra-scroll" ; if you git clone'd instead of using vc
+  :vc (:url "https://github.com/jdtsmith/ultra-scroll") ; For Emacs>=30
+  :init
+  (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
+        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+  :config
+  (ultra-scroll-mode 1))
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;; Native Emacs UI Configuration
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-;; (customize-set-variable 'scroll-bar-mode nil)
+(customize-set-variable 'scroll-bar-mode nil)
 (setq scroll-bar-mode nil)
 ;; Now Included in Emacs 30!
 (if (version<= "29.0.0" emacs-version)
@@ -202,4 +214,4 @@
 ;;(global-linum-mode t)
 (setq inhibit-startup-message t) 
 (setq initial-scratch-message "")
-;;(mac-auto-ascii-mode 1)
+; (mac-auto-ascii-mode 1)

@@ -33,6 +33,7 @@
   (add-hook 'emacs-startup-hook #'neotree-show)
   (add-hook 'emacs-startup-hook
             (lambda ()
+              (setq neo-window-width 40)
               (let ((height (/ (window-body-height) 5)))
                 (split-window-vertically (* 4 height)))
               (other-window 1)
