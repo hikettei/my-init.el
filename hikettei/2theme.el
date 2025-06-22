@@ -78,7 +78,7 @@
   (beacon-mode 1))
 
 (use-package paren
-  :ensure t
+  :ensure nil
   :hook
   (after-init . show-paren-mode)
   :custom-face
