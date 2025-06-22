@@ -1,15 +1,13 @@
 ;; This file provides a dev env dedicated to C++/Common Lisp(SLIME), and Python.
+
+(defun include (name) (load-file name))
+(include "0package-manager.el")
+(include "1setup.el")
+(include "2multi-term.el")
+(include "3theme.el")
+
 ;; ~~ Packaging ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(require 'package)
-;; TODO: use-package使ってるけど，elpaca+setupに書き換えたい
-(require 'use-package)
-;; Preparing MELPA
-(setq package-archives
-      '(("gnu" . "http://elpa.gnu.org/packages/")
-        ;;("melpa" . "http://melpa.org/packages/")
-        ("org" . "http://orgmode.org/elpa/")
-	("melpa-stable" . "https://stable.melpa.org/packages/")))
-(package-initialize)
+
 ;; ~~ Elcord ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 (use-package elcord
   :ensure t)
