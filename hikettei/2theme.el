@@ -135,6 +135,38 @@
   :ensure t
   :config
   (amx-mode 1))
+
+(use-package centaur-tabs
+  :ensure t
+  :demand
+  :config
+  (centaur-tabs-mode t)
+  :bind
+  ("C-c <prior>" . centaur-tabs-backward)
+  ("C-c <next>"  . centaur-tabs-forward)
+  ;;("C-c <left>" . centaur-tabs-move-current-tab-to-left)
+  ;;("C-c <right>" . centaur-tabs-move-current-tab-to-right)
+  :config
+  (centaur-tabs-headline-match)
+  (setq centaur-tabs-set-icons t)
+  (setq centaur-tabs-icon-type 'all-the-icons)
+  (setq centaur-tabs-set-bar 'under)
+  ;; Note: If you're not using Spacmeacs, in order for the underline to display
+  ;; correctly you must add the following line:
+  (setq x-underline-at-descent-line t)
+  (setq centaur-tabs-close-button "X")
+  (setq centaur-tabs-set-modified-marker t)
+  (setq centaur-tabs-modified-marker "*"))
+
+(use-package vundo
+  :ensure t
+  :bind
+  ("C-x u" . vundo)
+  :config
+  (setq vundo-window-max-height 10)
+  (setq vundo-glyph-alist vundo-unicode-symbols)
+  ;; (set-face-attribute 'vundo-default nil :family "Symbola")
+  )
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;; Native Emacs UI Configuration
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
