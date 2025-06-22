@@ -1,3 +1,1 @@
-```
-https://zenn.dev/armcore/articles/mac-program-emacs
-```
+currently im using https://github.com/jdtsmith/emacs-mac
