@@ -32,13 +32,16 @@
   :custom-face
   (doom-modeline-bar ((t (:background "#6272a4"))))
   :config
+  (setq doom-neotree-file-icons t)
+  (setq doom-themes-neotree-file-icons t)
   (load-theme 'doom-dracula t)
   ;; Enable flashing mode-line on errors
   (doom-themes-visual-bell-config)
   ;; Enable custom neotree theme (nerd-icons must be installed!)
+  
   (doom-themes-neotree-config)
   ;; or for treemacs users
-  (doom-themes-treemacs-config)
+ ; (doom-themes-treemacs-config)
   ;; Corrects (and improves) org-mode's native fontification.
   (doom-themes-org-config))
 
@@ -110,7 +113,7 @@
   :commands
   (neotree-show neotree-hide neotree-dir neotree-find)
   :custom
-  (neo-theme 'nerd2)
+  (neo-theme 'nerd)
   :bind
   ("<f9>" . neotree-projectile-toggle)
   ("\C-q" . neotree-toggle) ;; control + q neotree
