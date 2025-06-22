@@ -456,7 +456,7 @@ VAL into one s-expression."
                          list))))
           ((error "Invalid option %S" name)))))
 
-
+
 ;;; Default local macros definitions
 
 (setup-define :with-feature
