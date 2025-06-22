@@ -88,6 +88,10 @@
   (show-paren-when-point-inside-paren t)
   (show-paren-when-point-in-periphery t))
 
+(use-package nerd-icons :ensure t)
+(use-package page-break-lines :ensure t)
+(use-package projectile :ensure t)
+
 (use-package neotree
   :ensure t
   :after
@@ -170,7 +174,7 @@
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 ;; Native Emacs UI Configuration
 ;; ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-(customize-set-variable 'scroll-bar-mode nil)
+;; (customize-set-variable 'scroll-bar-mode nil)
 (setq scroll-bar-mode nil)
 ;; Now Included in Emacs 30!
 (if (version<= "29.0.0" emacs-version)
