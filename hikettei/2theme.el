@@ -106,8 +106,7 @@
 (use-package neotree
   :pin melpa
   :ensure t
-  :after
-  projectile
+  :after (projectile doom-themes nerd-icons all-the-icons)
   :commands
   (neotree-show neotree-hide neotree-dir neotree-find)
   :custom
@@ -135,6 +134,9 @@
           (if file-name
 	      (neotree-find file-name))))))
   :config
+  (add-hook 'neotree-mode-hook
+          #'(lambda ()
+              (display-line-numbers-mode -1)))
   (setq neo-hidden-regexp-list '("^\\." "\\.pyc$" "\\.fasl$" "~$" "^#.*#$" "\\.elc$"))
   (setq neo-show-hidden-files nil))
 ;; Rich M-x
