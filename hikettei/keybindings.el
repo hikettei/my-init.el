@@ -2,3 +2,11 @@
 (global-set-key (kbd "C-c <down>")  'windmove-down)
 (global-set-key (kbd "C-c <up>")    'windmove-up)
 (global-set-key (kbd "C-c <right>") 'windmove-right)
+(defun slime-repl-1 ()
+  "Create a new frame and start or switch to a SLIME REPL in it."
+  (interactive)
+  (let ((frame (make-frame-command)))
+    (select-frame-set-input-focus frame)
+    (if (slime-connected-p)
+        (slime-switch-to-output-buffer)
+      (slime))))
